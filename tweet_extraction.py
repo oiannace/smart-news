@@ -24,14 +24,16 @@ users_following = requests.get(url=url_users_following, headers=headers)
 print(users_following.status_code)
 
 now = datetime.datetime.now()
-current_time_format = str(now.date())+"T"+str(now.hour-3)+":"+str(now.minute)+":"+str(now.second)+"Z"
+current_time_format = str(now.year)+":"+str(now.month).zfill(2)+":"+str(now.day-1).zfill(2)+"T"+str(now.hour).zfill(2)+":"+str(now.minute).zfill(2)+":"+str(now.second).zfill(2)+"Z"
+print(current_time_format)
+exclude = ['retweets', 'replies']
 
 users_following_ids = [user['id'] for user in users_following.json()['data']]
 users_following_tweets = {}
 for user_id in users_following_ids:
-    url_user_following_tweets = f'https://api.twitter.com/2/users/{user_id}/tweets?start_time={current_time_format}'
+    url_user_following_tweets = f'https://api.twitter.com/2/users/{user_id}/tweets?start_time={current_time_format}&exclude=retweets'
     users_following_tweets[user_id]=requests.get(url=url_user_following_tweets, headers=headers)
     
-print([users_following_tweets[content].json()['data'] for content in users_following_tweets])
+print([users_following_tweets[content].json() for content in users_following_tweets])
 
 print(str(now.date())+"T"+str(now.hour-6)+":"+str(now.minute)+":"+str(now.second)+"Z")
