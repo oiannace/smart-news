@@ -1,6 +1,12 @@
 import requests
 import os
 import datetime
+import json
+import nltk
+import tweet_processing_functions
+
+#need to run the following line once, then it can be commented out
+#nltk.download('punkt')
 
 key = os.environ.get('TWITTER_API_KEY')
 secret = os.environ.get('TWITTER_API_SECRET')
@@ -24,7 +30,7 @@ users_following = requests.get(url=url_users_following, headers=headers)
 print(users_following.status_code)
 
 now = datetime.datetime.now()
-current_time_format = str(now.year)+":"+str(now.month).zfill(2)+":"+str(now.day-1).zfill(2)+"T"+str(now.hour).zfill(2)+":"+str(now.minute).zfill(2)+":"+str(now.second).zfill(2)+"Z"
+current_time_format = str(now.year)+"-"+str(now.month).zfill(2)+"-"+str(now.day-1).zfill(2)+"T"+str(now.hour).zfill(2)+":"+str(now.minute).zfill(2)+":"+str(now.second).zfill(2)+"Z"
 print(current_time_format)
 exclude = ['retweets', 'replies']
 
@@ -34,6 +40,17 @@ for user_id in users_following_ids:
     url_user_following_tweets = f'https://api.twitter.com/2/users/{user_id}/tweets?start_time={current_time_format}&exclude=retweets'
     users_following_tweets[user_id]=requests.get(url=url_user_following_tweets, headers=headers)
     
-print([users_following_tweets[content].json() for content in users_following_tweets])
+user_tweets_simple = {}
 
-print(str(now.date())+"T"+str(now.hour-6)+":"+str(now.minute)+":"+str(now.second)+"Z")
+for user_id in users_following_ids:
+    user_tweets_simple[user_id] = [users_following_tweets[user_id].json()['data'][i]['text'] for i in range(users_following_tweets[user_id].json()['meta']['result_count'])]
+
+#tokenize words in tweet
+user_tweets_word_tokenize = tweet_processing_functions.word_tokenize(user_tweets_simple, users_following_ids)
+
+print(user_tweets_word_tokenize[user_id])
+
+#filter tweets for words that dont add valuable information, nltk refers to this list as stopwords
+user_tweets_without_stopwords = tweet_processing_functions.remove_stopwords(user_tweets_word_tokenize, users_following_ids)
+
+print(user_tweets_without_stopwords[user_id])
