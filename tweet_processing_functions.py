@@ -1,6 +1,6 @@
 import nltk
 import copy
-
+import re
 #run the following line once, then it can be commented out
 #nltk.download("stopwords")
 
@@ -22,3 +22,13 @@ def remove_stopwords(tweets_tokenized, users_following_ids):
             tweets_without_stopwords[user_id][tweet_index] = [word for word in temp_tweet if not word in stop_words]
     
     return tweets_without_stopwords
+
+def remove_punctuation(original_tweets, users_following_ids):
+    user_tweets_no_punc = {}
+    
+    #regex pattern for only letters and numbers
+    regex_pattern = r"[^a-zA-Z0-9\n\.]"
+    
+    for user_id in users_following_ids:
+        user_tweets_no_punc[user_id] = [re.sub(regex_pattern, " ", original_tweets[user_id][tweet]) for tweet in range(len(original_tweets[user_id]))]
+    return user_tweets_no_punc

@@ -30,7 +30,7 @@ users_following = requests.get(url=url_users_following, headers=headers)
 print(users_following.status_code)
 
 now = datetime.datetime.now()
-current_time_format = str(now.year)+"-"+str(now.month).zfill(2)+"-"+str(now.day-1).zfill(2)+"T"+str(now.hour).zfill(2)+":"+str(now.minute).zfill(2)+":"+str(now.second).zfill(2)+"Z"
+current_time_format = str(now.year)+"-"+str(now.month).zfill(2)+"-"+str(now.day-3).zfill(2)+"T"+str(now.hour).zfill(2)+":"+str(now.minute).zfill(2)+":"+str(now.second).zfill(2)+"Z"
 print(current_time_format)
 exclude = ['retweets', 'replies']
 
@@ -45,12 +45,12 @@ user_tweets_simple = {}
 for user_id in users_following_ids:
     user_tweets_simple[user_id] = [users_following_tweets[user_id].json()['data'][i]['text'] for i in range(users_following_tweets[user_id].json()['meta']['result_count'])]
 
-#tokenize words in tweet
-user_tweets_word_tokenize = tweet_processing_functions.word_tokenize(user_tweets_simple, users_following_ids)
+#remove punctuation
+user_tweets_no_punc = tweet_processing_functions.remove_punctuation(user_tweets_simple, users_following_ids)
 
-print(user_tweets_word_tokenize[user_id])
+#tokenize words in tweet
+user_tweets_word_tokenize = tweet_processing_functions.word_tokenize(user_tweets_no_punc, users_following_ids)
 
 #filter tweets for words that dont add valuable information, nltk refers to this list as stopwords
 user_tweets_without_stopwords = tweet_processing_functions.remove_stopwords(user_tweets_word_tokenize, users_following_ids)
 
-print(user_tweets_without_stopwords[user_id])
