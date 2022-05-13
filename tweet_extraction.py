@@ -45,12 +45,25 @@ user_tweets_simple = {}
 for user_id in users_following_ids:
     user_tweets_simple[user_id] = [users_following_tweets[user_id].json()['data'][i]['text'] for i in range(users_following_tweets[user_id].json()['meta']['result_count'])]
 
+
+#tokenize words in tweet for pos purpose
+user_tweets_word_tokenize_for_pos = tweet_processing_functions.word_tokenize(user_tweets_simple, users_following_ids)
+
+#tag each word with the part of speech in order to use for lemmatization in later stage
+pos_tags = tweet_processing_functions.part_of_speech_tagging(user_tweets_word_tokenize_for_pos, users_following_ids)
+print(user_tweets_simple[user_id][1])
+
 #remove punctuation
 user_tweets_no_punc = tweet_processing_functions.remove_punctuation(user_tweets_simple, users_following_ids)
 
-#tokenize words in tweet
-user_tweets_word_tokenize = tweet_processing_functions.word_tokenize(user_tweets_no_punc, users_following_ids)
+#tokenization for regular purposes after punctuation is removed
+user_tweets_word_tokenize_reg= tweet_processing_functions.word_tokenize(user_tweets_no_punc, users_following_ids)
 
 #filter tweets for words that dont add valuable information, nltk refers to this list as stopwords
-user_tweets_without_stopwords = tweet_processing_functions.remove_stopwords(user_tweets_word_tokenize, users_following_ids)
+user_tweets_without_stopwords = tweet_processing_functions.remove_stopwords(user_tweets_word_tokenize_reg, users_following_ids)
 
+print(user_tweets_without_stopwords[user_id][1])
+
+#Stemming words - basically chopping off the ends of words to get the base form
+user_tweets_stemmed = tweet_processing_functions.word_stemmer(user_tweets_without_stopwords, users_following_ids)
+print(user_tweets_stemmed[user_id][1])
