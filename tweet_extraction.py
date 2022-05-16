@@ -67,5 +67,5 @@ user_tweets_without_stopwords = tweet_processing_functions.remove_stopwords(user
 #print(user_tweets_without_stopwords[user_id][1])
 
 #Stemming words - basically chopping off the ends of words to get the base form
-user_tweets_stemmed = tweet_processing_functions.word_stemmer(user_tweets_without_stopwords, users_following_ids)
-#print(user_tweets_stemmed[user_id][1])
+user_tweets_lemmatized = tweet_processing_functions.word_lemmatizer(user_tweets_without_stopwords, pos_tags_updated, users_following_ids)
+#print(user_tweets_lemmatized[user_id][1])
