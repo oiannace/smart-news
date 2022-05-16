@@ -16,9 +16,9 @@ def remove_stopwords(tweets_tokenized, users_following_ids):
     
     tweets_without_stopwords = {}
     for user_id in users_following_ids:
-        tweets_without_stopwords[user_id] = tweets_tokenized[user_id]
+        tweets_without_stopwords[user_id] = copy.deepcopy(tweets_tokenized[user_id])
         for tweet_index in range(len(tweets_without_stopwords[user_id])):
-            temp_tweet = copy.deepcopy(tweets_without_stopwords[user_id][tweet_index])
+            temp_tweet = tweets_without_stopwords[user_id][tweet_index]
             tweets_without_stopwords[user_id][tweet_index] = [word for word in temp_tweet if not word in stop_words]
     
     return tweets_without_stopwords
@@ -38,7 +38,7 @@ def word_stemmer(user_tweets, users_following_ids):
     stemmed_tweets = {}
     
     for user_id in users_following_ids:
-        stemmed_tweets[user_id] = user_tweets[user_id]
+        stemmed_tweets[user_id] = copy.deepcopy(user_tweets[user_id])
         for tweet_index in range(len(stemmed_tweets[user_id])):
             stemmed_tweets[user_id][tweet_index] = [stemmer.stem(word) for word in user_tweets[user_id][tweet_index]]      
     return stemmed_tweets
@@ -52,4 +52,18 @@ def part_of_speech_tagging(user_tweets_tokenized, users_following_ids):
 
 
 #function to convert odd list of pos tags to a dictionary for easy lookup for lem
+def pos_tags_data_structure_conv(pos_tags, users_following_ids):
+    pos_tags_updated = {}
+    
+    for user_id in users_following_ids:
+        pos_tags_updated[user_id] = copy.deepcopy(pos_tags[user_id])
+        for tweet_index in range(len(pos_tags[user_id])):
+            pos_tags_updated[user_id][tweet_index] =  {}
+            for word in pos_tags[user_id][tweet_index]:
+                pos_tags_updated[user_id][tweet_index][word[0]] = word[1]
+    return pos_tags_updated
+    
+    
+    
+    
     
