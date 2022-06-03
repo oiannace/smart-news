@@ -7,9 +7,9 @@ from nltk.corpus import wordnet
 #nltk.download("stopwords")
 #nltk.download('averaged_perceptron_tagger')
 #nltk.download('wordnet')
-nltk.download('omw-1.4')
+#nltk.download('omw-1.4')
 
-
+#utility function to transform format of part of speech (pos) into usable format
 def get_wordnet_pos(treebank_tag):
 
     if treebank_tag.startswith('J'):
@@ -23,12 +23,15 @@ def get_wordnet_pos(treebank_tag):
     else:
         return ''
 
+#function to tokenize words in a tweet, and stored into a dictionary by user
 def word_tokenize(all_users_tweets, users_following_ids):
     user_tweets_word_tokenize = {}
     for user_id in users_following_ids:
+        #iterating through each tweet for a particular user and tokenizing the words
         user_tweets_word_tokenize[user_id] = [nltk.word_tokenize(all_users_tweets[user_id][tweet]) for tweet in range(len(all_users_tweets[user_id]))]
     return user_tweets_word_tokenize
 
+#function to remove a predefined list of words from the tweets that dont add value to analysis
 def remove_stopwords(tweets_tokenized, users_following_ids):
     #set is faster to search
     stop_words = set(nltk.corpus.stopwords.words("english"))
@@ -42,6 +45,7 @@ def remove_stopwords(tweets_tokenized, users_following_ids):
     
     return tweets_without_stopwords
 
+#function to keep only tokenized words that contain numbers and letters
 def remove_punctuation(original_tweets, users_following_ids):
     user_tweets_no_punc = {}
     
@@ -52,6 +56,7 @@ def remove_punctuation(original_tweets, users_following_ids):
         user_tweets_no_punc[user_id] = [re.sub(regex_pattern, " ", original_tweets[user_id][tweet]) for tweet in range(len(original_tweets[user_id]))]
     return user_tweets_no_punc
 
+#lemmatizing words: distilling word into its base form
 def word_lemmatizer(user_tweets, pos_tags, users_following_ids):
     lemmatizer = nltk.stem.WordNetLemmatizer()
     lemmatized_tweets = {}
@@ -62,6 +67,7 @@ def word_lemmatizer(user_tweets, pos_tags, users_following_ids):
             lemmatized_tweets[user_id][tweet_index] = [lemmatizer.lemmatize(word,pos_tags[user_id][tweet_index][word]) if (pos_tags[user_id][tweet_index].get(word)) else word for word in user_tweets[user_id][tweet_index]]      
     return lemmatized_tweets
 
+#creating a new data structure which contains pos tags for each word in a tweet for each user
 def part_of_speech_tagging(user_tweets_tokenized, users_following_ids):
     pos_tags = {}
     
