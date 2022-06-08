@@ -25,9 +25,13 @@ my_user = requests.get(url=url_me, headers=headers)
 print(my_user.status_code)
 my_id = my_user.json()['data']['id']
 
-url_users_following = f'https://api.twitter.com/2/users/{my_id}/following'
+url_users_following = f'https://api.twitter.com/2/users/{my_id}/following?user.fields=created_at,location,description'
 users_following = requests.get(url=url_users_following, headers=headers)
 print(users_following.status_code)
+
+user_df = tweet_processing_functions.nested_dict_to_dataframe_user(users_following.json())
+print(user_df)
+
 
 now = datetime.datetime.now()
 current_time_format = str(now.year)+"-"+str(now.month).zfill(2)+"-"+str(now.day-3).zfill(2)+"T"+str(now.hour).zfill(2)+":"+str(now.minute).zfill(2)+":"+str(now.second).zfill(2)+"Z"
