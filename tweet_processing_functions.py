@@ -2,7 +2,7 @@ import nltk
 import copy
 import re
 from nltk.corpus import wordnet
-
+import pandas as pd
 #run the following line once, then it can be commented out
 #nltk.download("stopwords")
 #nltk.download('averaged_perceptron_tagger')
@@ -94,6 +94,21 @@ def pos_tags_data_structure_conv(pos_tags, users_following_ids):
             
     return pos_tags_updated
     
+
+def nested_dict_to_dataframe_user(user_data):
+    nested_dict_columns = ['id', 'username', 'name', 'created_at', 'description', 'location']
+    dataframe_cols = ['User_ID', 'Username', 'Name', 'Creation_Date', 'Bio', 'Location']
+    user_pd = pd.DataFrame(columns=dataframe_cols)
     
+    for user in range(len(user_data['data'])):
+        user_pd = user_pd.append({dataframe_cols[0] : user_data['data'][user][nested_dict_columns[0]],
+                                       dataframe_cols[1] : user_data['data'][user][nested_dict_columns[1]],
+                                       dataframe_cols[2] : user_data['data'][user][nested_dict_columns[2]],
+                                       dataframe_cols[3] : user_data['data'][user][nested_dict_columns[3]],
+                                       dataframe_cols[4] : user_data['data'][user][nested_dict_columns[4]],
+                                       dataframe_cols[5] : user_data['data'][user][nested_dict_columns[5]]
+                                      }, ignore_index=True)   
+            
+    return user_pd
     
     
