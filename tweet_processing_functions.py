@@ -110,5 +110,22 @@ def nested_dict_to_dataframe_user(user_data):
                                       }, ignore_index=True)   
             
     return user_pd
+ 
+def lemm_tweets_to_dataframe(lemm_tweets, tweet_ids, users_following_ids):
+    df_cols = ['User_ID', 'Tweet_ID', 'Tweet_Content']
+    tweets_df = pd.DataFrame(columns = df_cols)
+    
+    for user_id in users_following_ids:
+        for tweet_index in range(len(lemm_tweets[user_id])):
+            if(range(len(lemm_tweets[user_id])) != range(len(tweet_ids[user_id]))):
+                print("Different num of tweets than ids")
+            tweets_df = tweets_df.append({df_cols[0] : user_id,
+                                      df_cols[1] : tweet_ids[user_id][tweet_index],
+                                      df_cols[2] : lemm_tweets[user_id][tweet_index]
+                                      }, ignore_index=True)
+            
+    return tweets_df
+        
+    
     
     
