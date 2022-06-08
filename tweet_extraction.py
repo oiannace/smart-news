@@ -45,10 +45,10 @@ for user_id in users_following_ids:
     users_following_tweets[user_id]=requests.get(url=url_user_following_tweets, headers=headers)
     
 user_tweets_simple = {}
-
+user_tweets_ids = {}
 for user_id in users_following_ids:
     user_tweets_simple[user_id] = [users_following_tweets[user_id].json()['data'][i]['text'] for i in range(users_following_tweets[user_id].json()['meta']['result_count'])]
-
+    user_tweets_ids[user_id] =  [users_following_tweets[user_id].json()['data'][i]['id'] for i in range(users_following_tweets[user_id].json()['meta']['result_count'])]
 
 #tokenize words in tweet for pos purpose
 user_tweets_word_tokenize_for_pos = tweet_processing_functions.word_tokenize(user_tweets_simple, users_following_ids)
@@ -72,4 +72,9 @@ user_tweets_without_stopwords = tweet_processing_functions.remove_stopwords(user
 
 #Stemming words - basically chopping off the ends of words to get the base form
 user_tweets_lemmatized = tweet_processing_functions.word_lemmatizer(user_tweets_without_stopwords, pos_tags_updated, users_following_ids)
-#print(user_tweets_lemmatized[user_id][1])
+#print(user_tweets_lemmatized)
+
+tweets_lemmatized_df = tweet_processing_functions.lemm_tweets_to_dataframe(user_tweets_lemmatized, user_tweets_ids, users_following_ids)
+print(tweets_lemmatized_df)
+def load_data():
+    return tweets_lemmatized_df, user_df

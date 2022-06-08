@@ -36,11 +36,12 @@ create_user_dim_q = '''
     CREATE  TABLE processed_tweets.user_dim ( 
         user_key            integer Primary key ,
         location_key        integer,
+        creation_date_key    integer,
+        user_id              integer,
         username                varchar(100)   ,
         name                 varchar(100),
-        user_id              integer,
         description          varchar(200),
-        creation_date_key    integer,
+        
         FOREIGN KEY (creation_date_key) REFERENCES processed_tweets.user_date_dim(date_key),
         FOREIGN KEY (location_key) REFERENCES processed_tweets.location_dim(location_key)
 );
