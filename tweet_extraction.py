@@ -41,15 +41,17 @@ exclude = ['retweets', 'replies']
 users_following_ids = [user['id'] for user in users_following.json()['data']]
 users_following_tweets = {}
 for user_id in users_following_ids:
-    url_user_following_tweets = f'https://api.twitter.com/2/users/{user_id}/tweets?start_time={current_time_format}&exclude=retweets'
+    url_user_following_tweets = f'https://api.twitter.com/2/users/{user_id}/tweets?start_time={current_time_format}&exclude=retweets&tweet.fields=created_at'
     users_following_tweets[user_id]=requests.get(url=url_user_following_tweets, headers=headers)
     
 user_tweets_simple = {}
 user_tweets_ids = {}
+user_tweets_dates = {}
 for user_id in users_following_ids:
     user_tweets_simple[user_id] = [users_following_tweets[user_id].json()['data'][i]['text'] for i in range(users_following_tweets[user_id].json()['meta']['result_count'])]
     user_tweets_ids[user_id] =  [users_following_tweets[user_id].json()['data'][i]['id'] for i in range(users_following_tweets[user_id].json()['meta']['result_count'])]
-
+    user_tweets_dates[user_id] =  [users_following_tweets[user_id].json()['data'][i]['created_at'] for i in range(users_following_tweets[user_id].json()['meta']['result_count'])]
+#print(user_tweets_dates[user_id])
 #tokenize words in tweet for pos purpose
 user_tweets_word_tokenize_for_pos = tweet_processing_functions.word_tokenize(user_tweets_simple, users_following_ids)
 
@@ -74,7 +76,7 @@ user_tweets_without_stopwords = tweet_processing_functions.remove_stopwords(user
 user_tweets_lemmatized = tweet_processing_functions.word_lemmatizer(user_tweets_without_stopwords, pos_tags_updated, users_following_ids)
 #print(user_tweets_lemmatized)
 
-tweets_lemmatized_df = tweet_processing_functions.lemm_tweets_to_dataframe(user_tweets_lemmatized, user_tweets_ids, users_following_ids)
+tweets_lemmatized_df = tweet_processing_functions.lemm_tweets_to_dataframe(user_tweets_lemmatized, user_tweets_ids, user_tweets_dates, users_following_ids)
 print(tweets_lemmatized_df)
 def load_data():
     return tweets_lemmatized_df, user_df
