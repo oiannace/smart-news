@@ -17,6 +17,7 @@ tweet_create_date_dim_q = '''
         date_key             integer Primary key,
         year                 integer,
         month                integer,
+        day                  integer,
         hour                 integer,
         minute               integer
 );
@@ -27,6 +28,7 @@ user_create_date_dim_q = '''
         date_key             integer Primary key,
         year                 integer,
         month                integer,
+        day                  integer,
         hour                 integer,
         minute               integer
 );
@@ -37,10 +39,10 @@ create_user_dim_q = '''
         user_key            integer Primary key ,
         location_key        integer,
         creation_date_key    integer,
-        user_id              integer,
+        user_id              bigint,
         username                varchar(100)   ,
         name                 varchar(100),
-        description          varchar(200),
+        bio          varchar(200),
         
         FOREIGN KEY (creation_date_key) REFERENCES processed_tweets.user_date_dim(date_key),
         FOREIGN KEY (location_key) REFERENCES processed_tweets.location_dim(location_key)
@@ -57,16 +59,16 @@ create_location_dim_q = '''
 
 create_fact_tbl_q = '''
     CREATE  TABLE processed_tweets.tweet_details_fact ( 
-	   user_creation_date_key             integer  ,
-       tweet_creation_date_key            integer , 
+	   user_date_key             integer  ,
+       tweet_date_key            integer , 
 	   location_key         integer   ,
 	   user_key            integer   ,
-	   tweet_key           integer   ,
+	   tweet_id           bigint  ,
 	   tweet_content       varchar(500),
 	   
-	   PRIMARY KEY (tweet_key),
-	   FOREIGN KEY ( user_creation_date_key ) REFERENCES processed_tweets.user_date_dim( date_key )   ,
-       FOREIGN KEY ( tweet_creation_date_key ) REFERENCES processed_tweets.tweet_date_dim( date_key ),
+	   PRIMARY KEY (tweet_id),
+	   FOREIGN KEY ( user_date_key ) REFERENCES processed_tweets.user_date_dim( date_key )   ,
+       FOREIGN KEY ( tweet_date_key ) REFERENCES processed_tweets.tweet_date_dim( date_key ),
 	   FOREIGN KEY ( location_key ) REFERENCES processed_tweets.location_dim( location_key )   ,
 	   FOREIGN KEY ( user_key ) REFERENCES processed_tweets.user_dim( user_key ) 
  );
