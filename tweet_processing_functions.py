@@ -97,7 +97,7 @@ def pos_tags_data_structure_conv(pos_tags, users_following_ids):
 
 def nested_dict_to_dataframe_user(user_data):
     nested_dict_columns = ['id', 'username', 'name', 'created_at', 'description', 'location']
-    dataframe_cols = ['User_ID', 'Username', 'Name', 'Creation_Date', 'Bio', 'Location']
+    dataframe_cols = ['user_id', 'username', 'name', 'creation_date', 'bio', 'location']
     user_pd = pd.DataFrame(columns=dataframe_cols)
     
     for user in range(len(user_data['data'])):
@@ -111,8 +111,8 @@ def nested_dict_to_dataframe_user(user_data):
             
     return user_pd
  
-def lemm_tweets_to_dataframe(lemm_tweets, tweet_ids, users_following_ids):
-    df_cols = ['User_ID', 'Tweet_ID', 'Tweet_Content']
+def lemm_tweets_to_dataframe(lemm_tweets, tweet_ids, tweet_dates, users_following_ids):
+    df_cols = ['user_id', 'tweet_id', 'tweet_date', 'tweet_content']
     tweets_df = pd.DataFrame(columns = df_cols)
     
     for user_id in users_following_ids:
@@ -121,7 +121,8 @@ def lemm_tweets_to_dataframe(lemm_tweets, tweet_ids, users_following_ids):
                 print("Different num of tweets than ids")
             tweets_df = tweets_df.append({df_cols[0] : user_id,
                                       df_cols[1] : tweet_ids[user_id][tweet_index],
-                                      df_cols[2] : lemm_tweets[user_id][tweet_index]
+                                      df_cols[2] : tweet_dates[user_id][tweet_index],
+                                      df_cols[3] : lemm_tweets[user_id][tweet_index]
                                       }, ignore_index=True)
             
     return tweets_df
