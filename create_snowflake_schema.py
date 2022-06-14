@@ -77,12 +77,15 @@ create_fact_tbl_q = '''
 queries = [init_q, user_create_date_dim_q, tweet_create_date_dim_q, create_location_dim_q,  create_user_dim_q, create_fact_tbl_q]
 
 #username and password are specific to your postgreSQL account
-db_name = "tweet_data_db"
+#set up environment variables
+db_name = "db_name"
 username = "postgres"
-password = "pospass"
-
-conn = psycopg2.connect(host = "localhost",
+password = "password"
+host = "db-instance.random_letters.ca-central-1.rds.amazonaws.com" #will be in this form
+port = "5432"
+conn = psycopg2.connect(host = host,
                         dbname = db_name,
+                        port = port,
                         user = username,
                         password = password)
 

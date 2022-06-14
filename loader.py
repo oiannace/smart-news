@@ -129,13 +129,16 @@ user_date_dim = user_date_dim[['date_key', 'year', 'month', 'day', 'hour', 'minu
 tweet_date_dim = tweet_date_dim[['date_key', 'year', 'month', 'day', 'hour', 'minute']]
 user_loc_dim = user_loc_dim[['location_key', 'location']]
 
-
-username = "your username"
-password = "your password"
+#set up environment variables
+db_name = "dc-name"  #name of the database, not the database instance name
+username = "postgres"  #username for db, default is postgres
+password = "password"  #created password for db
+host = "db-name.random-lettters.ca-central-1.rds.amazonaws.com"  #endpoint for db
+schema = "processed_tweets"  #schema name, same as used to in create_snowflake_schema.py
 #USERNAME and PASSWORD are specific to your postgreSQL account
-engine = sqlalchemy.create_engine(f"postgresql://{username}:{password}@localhost/tweet_data_db")
+engine = sqlalchemy.create_engine(f"postgresql://{username}:{password}@{host}/{db_name}")
 
 tables = [user_date_dim, tweet_date_dim, user_loc_dim, user_dim, tweet_content_fact]
 table_names = ["user_date_dim", "tweet_date_dim", "location_dim", "user_dim", "tweet_details_fact"]
 for i in range(len(tables)):
-    tables[i].to_sql(name=table_names[i], con=engine, schema="processed_tweets", if_exists="append", index=False)
+    tables[i].to_sql(name=table_names[i], con=engine, schema=schema, if_exists="append", index=False)
