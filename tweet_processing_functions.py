@@ -4,10 +4,10 @@ import re
 from nltk.corpus import wordnet
 import pandas as pd
 #run the following line once, then it can be commented out
-#nltk.download("stopwords")
-#nltk.download('averaged_perceptron_tagger')
-#nltk.download('wordnet')
-#nltk.download('omw-1.4')
+nltk.download("stopwords", download_dir='/tmp')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 
 #utility function to transform format of part of speech (pos) into usable format
 def get_wordnet_pos(treebank_tag):
