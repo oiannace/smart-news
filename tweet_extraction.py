@@ -41,9 +41,9 @@ def lambda_handler(event, context):
     
 
     bucket.put_object(Key="user_ids.txt", Body=json.dumps(users_following_ids).encode("utf-8"))
+    bucket.put_object(Key="user_full_data.txt", Body=json.dumps(users_following.json()).encode("utf-8"))
     for user_id in users_following_ids:
         bucket.put_object(Key=f"{user_id}_user_tweets.txt", Body=json.dumps(users_following_tweets[user_id].json()).encode("utf-8"))
-        
     return {
         'statusCode': 200,
         'body': json.dumps('Tweet data successfully extracted and stored in s3 bucket')

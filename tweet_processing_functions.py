@@ -3,11 +3,13 @@ import copy
 import re
 from nltk.corpus import wordnet
 import pandas as pd
-#run the following line once, then it can be commented out
+
+nltk.data.path.append("/tmp")
 nltk.download("stopwords", download_dir='/tmp')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('wordnet')
-nltk.download('omw-1.4')
+nltk.download('averaged_perceptron_tagger', download_dir='/tmp')
+nltk.download('wordnet', download_dir='/tmp')
+nltk.download('omw-1.4', download_dir='/tmp')
+nltk.download('punkt', download_dir='/tmp')
 
 #utility function to transform format of part of speech (pos) into usable format
 def get_wordnet_pos(treebank_tag):
@@ -127,6 +129,5 @@ def lemm_tweets_to_dataframe(lemm_tweets, tweet_ids, tweet_dates, users_followin
             
     return tweets_df
         
-    
     
     
