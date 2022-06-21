@@ -129,3 +129,4 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': json.dumps('Tweets successfully transformed and stored in s3 bucket')
     }
+
