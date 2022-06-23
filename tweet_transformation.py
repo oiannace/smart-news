@@ -5,6 +5,7 @@ from io import StringIO
 import random
 import pandas as pd
 
+
 def lambda_handler(event, context):
 
     bucket_source_name = 'pre-transformation-bucket'
@@ -100,12 +101,12 @@ def lambda_handler(event, context):
     
     
     #transforming user_dim table into appropriate form for snowflake schema model
-    user_dim = pd.DataFrame(user_df[['user_id', 'username', 'name', 'bio']].drop_duplicates().reset_index(drop=True))
+    user_dim_temp = pd.DataFrame(user_df[['user_id', 'username', 'name', 'bio']].drop_duplicates().reset_index(drop=True))
     
-    user_dim.loc[:, 'user_key'] = 0
+    user_dim_temp.loc[:, 'user_key'] = 0
     
-    for j in range(len(user_dim['user_key'])):
-        user_dim.loc[j,'user_key'] = surrogate_key_list[i]
+    for j in range(len(user_dim_temp['user_key'])):
+        user_dim_temp.loc[j,'user_key'] = surrogate_key_list[i]
         i+=1
     
     
@@ -116,8 +117,31 @@ def lambda_handler(event, context):
     complete_table['tweet_content'] = complete_table['tweet_content'].apply(lambda row: json.dumps(row))
     
     
-    tables = [complete_table, user_dim, user_loc_dim, tweet_date_dim, user_date_dim]
-    table_names = ['complete_table', 'user_dim', 'user_loc_dim', 'tweet_date_dim', 'user_date_dim']
+    #merges for user_dim table
+    temp_df1 = complete_table.merge(user_dim_temp, how='inner', left_on='user_id', right_on='user_id')
+    temp_df2 = temp_df1.merge(user_date_dim, how='inner', left_on='creation_date', right_on='creation_date')
+    user_dim = temp_df2.merge(user_loc_dim, how='inner', left_on='location', right_on='location')
+    user_dim = user_dim.rename({'username_x' : 'username',
+                                'name_x' : 'name',
+                                'bio_x' : 'bio',
+                                'date_key' : 'creation_date_key'}, axis='columns')
+                                
+    user_dim = user_dim[['user_key', 'location_key', 'creation_date_key', 'user_id', 'username', 'name', 'bio']].drop_duplicates().reset_index(drop=True)
+    
+    
+    #merges for tweet_content fact table
+    temp_df3 = complete_table.merge(user_dim, how='inner', left_on='user_id', right_on='user_id')
+    temp_df3 = temp_df3.rename({'creation_date_key' : 'user_date_key'}, axis='columns')
+    tweet_content_fact_df = temp_df3.merge(tweet_date_dim, how='inner', left_on='tweet_date', right_on='tweet_date')
+    tweet_content_fact_df = tweet_content_fact_df.rename({'date_key' : 'tweet_date_key'}, axis='columns')
+    tweet_content_fact_df = tweet_content_fact_df[['user_date_key', 'tweet_date_key', 'location_key', 'user_key', 'tweet_id', 'tweet_content']]
+    
+    user_date_dim = user_date_dim[['date_key', 'year', 'month', 'day', 'hour', 'minute']]
+    tweet_date_dim = tweet_date_dim[['date_key', 'year', 'month', 'day', 'hour', 'minute']]
+    user_loc_dim = user_loc_dim[['location_key', 'location']]
+    
+    tables = [tweet_content_fact_df, user_dim, user_loc_dim, tweet_date_dim, user_date_dim]
+    table_names = ['tweet_content_fact', 'user_dim', 'user_loc_dim', 'tweet_date_dim', 'user_date_dim']
     
     for table_index in range(len(tables)):
         csv_buffer = StringIO()

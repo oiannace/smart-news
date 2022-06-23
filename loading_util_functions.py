@@ -1,9 +1,14 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
+import sqlalchemy
 import psycopg2
 
-init_q = '''DROP TABLE IF EXISTS processed_tweets.tweet_details_fact,
+def data_load(table, table_name, credentials):
+    
+    engine = sqlalchemy.create_engine(f"postgresql://{credentials['username']}:{credentials['password']}@{credentials['host']}/{credentials['db_name']}")
+    table.to_sql(name=table_name, con=engine, schema=credentials['schema'], if_exists="append", index=False)
+    
+    
+def queries_func():
+    init_q = '''DROP TABLE IF EXISTS processed_tweets.tweet_details_fact,
                                 processed_tweets.location_dim,
                                 processed_tweets.user_dim,
                                 processed_tweets.tweet_date_dim,
@@ -12,7 +17,7 @@ init_q = '''DROP TABLE IF EXISTS processed_tweets.tweet_details_fact,
             CREATE SCHEMA IF NOT EXISTS processed_tweets
             AUTHORIZATION postgres;'''
 
-tweet_create_date_dim_q = '''
+    tweet_create_date_dim_q = '''
     CREATE  TABLE processed_tweets.tweet_date_dim ( 
         date_key             integer Primary key,
         year                 integer,
@@ -20,21 +25,21 @@ tweet_create_date_dim_q = '''
         day                  integer,
         hour                 integer,
         minute               integer
-);
-'''
+    );
+    '''
 
-user_create_date_dim_q = '''
-    CREATE  TABLE processed_tweets.user_date_dim ( 
+    user_create_date_dim_q = '''
+        CREATE  TABLE processed_tweets.user_date_dim ( 
         date_key             integer Primary key,
         year                 integer,
         month                integer,
         day                  integer,
         hour                 integer,
         minute               integer
-);
-'''
+    );
+    '''
 
-create_user_dim_q = '''
+    create_user_dim_q = '''
     CREATE  TABLE processed_tweets.user_dim ( 
         user_key            integer Primary key ,
         location_key        integer,
@@ -46,18 +51,18 @@ create_user_dim_q = '''
         
         FOREIGN KEY (creation_date_key) REFERENCES processed_tweets.user_date_dim(date_key),
         FOREIGN KEY (location_key) REFERENCES processed_tweets.location_dim(location_key)
-);
-'''
+    );
+    '''
 
-create_location_dim_q = '''
+    create_location_dim_q = '''
     CREATE  TABLE processed_tweets.location_dim ( 
 	   location_key           integer Primary key ,
 	   location                varchar(100)
-);
-'''
+    );
+    '''
 
 
-create_fact_tbl_q = '''
+    create_fact_tbl_q = '''
     CREATE  TABLE processed_tweets.tweet_details_fact ( 
 	   user_date_key             integer  ,
        tweet_date_key            integer , 
@@ -71,30 +76,26 @@ create_fact_tbl_q = '''
        FOREIGN KEY ( tweet_date_key ) REFERENCES processed_tweets.tweet_date_dim( date_key ),
 	   FOREIGN KEY ( location_key ) REFERENCES processed_tweets.location_dim( location_key )   ,
 	   FOREIGN KEY ( user_key ) REFERENCES processed_tweets.user_dim( user_key ) 
- );
-'''
+    );
+    '''
 
-queries = [init_q, user_create_date_dim_q, tweet_create_date_dim_q, create_location_dim_q,  create_user_dim_q, create_fact_tbl_q]
+    queries = [init_q, user_create_date_dim_q, tweet_create_date_dim_q, create_location_dim_q,  create_user_dim_q, create_fact_tbl_q]
+    return queries
+    
+def create_tables(queries, credentials):
 
-#username and password are specific to your postgreSQL account
-#set up environment variables
-db_name = "db_name"
-username = "postgres"
-password = "password"
-host = "db-instance.random_letters.ca-central-1.rds.amazonaws.com" #will be in this form
-port = "5432"
-conn = psycopg2.connect(host = host,
-                        dbname = db_name,
-                        port = port,
-                        user = username,
-                        password = password)
+    conn = psycopg2.connect(host = credentials['host'],
+                        dbname = credentials['db_name'],
+                        user = credentials['username'],
+                        port=credentials['port'],
+                        password = credentials['password'])
 
-cur = conn.cursor()
+    cur = conn.cursor()
 
-for query in queries:
-    cur.execute(query)
-    conn.commit()
+    for query in queries:
+        cur.execute(query)
+        conn.commit()
 
-if(conn):
-    conn.close()
-    cur.close()
+    if(conn):
+        conn.close()
+        cur.close()
