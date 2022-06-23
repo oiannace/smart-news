@@ -1,6 +1,6 @@
 import json
 import psycopg2
-from lib import create_star_schema, loader
+from lib import loading_util_functions
 import sqlalchemy
 import os
 import boto3
@@ -44,8 +44,8 @@ def lambda_handler(event, context):
                     'db_name' : os.environ['db_name']}
     
     
-    queries = create_star_schema.queries_func()
-    create_star_schema.create_tables(queries, credentials)
+    queries = loading_util_functions.queries_func()
+    loading_util_functions.create_tables(queries, credentials)
     
     for i in range(len(tables)):
-        loader.data_load(tables[i], table_names[i], credentials)
+        loading_util_functions.data_load(tables[i], table_names[i], credentials)
