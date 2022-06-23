@@ -5,6 +5,7 @@ from io import StringIO
 import random
 import pandas as pd
 
+
 def lambda_handler(event, context):
 
     bucket_source_name = 'pre-transformation-bucket'
