@@ -1,0 +1,6 @@
+#!/bin/bash
+aws iam create-role --role-name lambda-example-role --assume-role-policy-document file://role-permissions/trust-policy.json
+
+aws iam put-role-policy --role-name lambda-example-role --policy-name example-policy --policy-document file://role-permissions/tweet-extraction-role-permissions.json
+
+aws lambda create-function --function-name lambda-example --runtime python3.7 --zip-file fileb://tweet_extraction.zip --handler tweet_extraction.lambda_handler --environment file://env_vars.json --role "arn:aws:iam::acount_id:role/lambda-example-role"
