@@ -3,4 +3,13 @@ aws iam create-role --role-name lambda-example-role --assume-role-policy-documen
 
 aws iam put-role-policy --role-name lambda-example-role --policy-name example-policy --policy-document file://role-permissions/tweet-extraction-role-permissions.json
 
-aws lambda create-function --function-name lambda-example --runtime python3.7 --zip-file fileb://tweet_extraction.zip --handler tweet_extraction.lambda_handler --environment file://env_vars.json --role "arn:aws:iam::acount_id:role/lambda-example-role"
+zip tweet_extraction.zip tweet_extraction.py
+
+aws lambda create-function --function-name lambda-example --runtime python3.7 --zip-file fileb://tweet_extraction.zip --handler tweet_extraction.lambda_handler --environment file://env_vars.json --role "arn:aws:iam::account_id:role/lambda-example-role"
+
+aws s3api create-bucket --bucket test-bucket-ornello --region ca-central-1 --create-bucket-configuration LocationConstraint=ca-central-1 --object-ownership BucketOwnerEnforced
+
+aws s3api put-bucket-policy --bucket test-bucket-ornello --policy file://role-permissions-orig/bucket_permissions.json
+
+
+
