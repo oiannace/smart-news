@@ -1,15 +1,26 @@
 #!/bin/bash
-aws iam create-role --role-name lambda-example-role --assume-role-policy-document file://role-permissions/trust-policy.json
+aws iam create-role --role-name lambda-extraction-role --assume-role-policy-document file://role-permissions/trust-policy.json
 
-aws iam put-role-policy --role-name lambda-example-role --policy-name example-policy --policy-document file://role-permissions/tweet-extraction-role-permissions.json
+aws iam put-role-policy --role-name lambda-extraction-role --policy-name example-policy --policy-document file://role-permissions/tweet-extraction-role-permissions.json
 
 zip tweet_extraction.zip tweet_extraction.py
 
-aws lambda create-function --function-name lambda-example --runtime python3.7 --zip-file fileb://tweet_extraction.zip --handler tweet_extraction.lambda_handler --environment file://env_vars.json --role "arn:aws:iam::account_id:role/lambda-example-role"
+aws lambda create-function --function-name lambda-extraction-function --runtime python3.7 --zip-file fileb://tweet_extraction.zip --handler tweet_extraction.lambda_handler --timeout 120 --memory-size 1024 --environment file://env_vars_extract.json --role "arn:aws:iam::account_id:role/lambda-extraction-role"
 
 aws s3api create-bucket --bucket test-bucket-ornello --region ca-central-1 --create-bucket-configuration LocationConstraint=ca-central-1 --object-ownership BucketOwnerEnforced
 
 aws s3api put-bucket-policy --bucket test-bucket-ornello --policy file://role-permissions-orig/bucket_permissions.json
+
+
+aws iam create-role --role-name lambda-transformation-role --assume-role-policy-document file://role-permissions/trust-policy.json
+
+aws iam put-role-policy --role-name lambda-transformation-role --policy-name transformation-policy --policy-document file://role-permissions/tweet-transformation-role-permissions.json
+
+zip tweet_transformation.zip tweet_transformation.py
+
+zip -u tweet_transformation.zip lib/tweet_processing_functions.py
+
+aws lambda create-function --function-name lambda-transformation-function --runtime python3.7 --zip-file fileb://tweet_transformation.zip --handler tweet_transformation.lambda_handler --timeout 120 --memory-size 1024 --role "arn:aws:iam::account_id:role/lambda-transformation-role"
 
 
 
