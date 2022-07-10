@@ -13,13 +13,13 @@
                 "logs:PutLogEvents"
             ],
             "Resource": [
-                "arn:aws:logs:ca-central-1:account_id:log-group:/aws/lambda/tweet-transformation:*"
+                "arn:aws:logs:ca-central-1:account_id:log-group:/aws/lambda/lambda-transformation-function:*"
             ]
         },
 	{
             "Effect": "Allow",
             "Action": "lambda:InvokeFunction",
-            "Resource": "arn:aws:lambda:ca-central-1:account_id:function:test-db-create*"
+            "Resource": "arn:aws:lambda:ca-central-1:account_id:function:lambda-loading-function*"
         },
 	{
             "Effect": "Allow",
@@ -35,8 +35,8 @@
                 "s3:GetObject"
             ],
             "Resource": [
-                "arn:aws:s3:::pre-transformation-bucket/*",
-                "arn:aws:s3:::pre-transformation-bucket"
+                "arn:aws:s3:::tweet-bucket/*",
+                "arn:aws:s3:::tweet-bucket"
             ]
         }
     ]
