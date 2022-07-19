@@ -1,0 +1,33 @@
+#!/bin/bash
+
+vpc_id=`aws ec2 create-vpc --cidr-block 192.168.0.0/24 --query Vpc.VpcId --output text`
+
+aws ec2 create-subnet --vpc-id $vpc_id --cidr-block 192.168.0.0/28
+
+internet_gateway_id=`aws ec2 create-internet-gateway --query InternetGateway.InternetGatewayId --output text`
+
+aws ec2 attach-internet-gateway --vpc-id $vpc_id --internet-gateway-id $internet_gateway_id
+
+route_table_id=`aws ec2 create-route-table --vpc-id $vpc_id --query RouteTable.RouteTableId --output text`
+
+aws ec2 create-route --route-table-id $route_table_id --destination-cidr-block 0.0.0.0/0 --gateway-id $internet_gateway_id
+
+subnet_id=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpc_id}" --query Subnets[0].SubnetId --output text`
+
+aws ec2 associate-route-table --subnet-id $subnet_id --route-table-id $route_table_id
+
+aws ec2 modify-subnet-attribute --subnet-id $subnet_id --map-public-ip-on-launch
+
+aws ec2 create-key-pair --key-name MyKeyPair3 --query "KeyMaterial" --output text > MyKeyPair3.pem
+
+chmod 400 MyKeyPair3.pem
+
+group_id=`aws ec2 create-security-group --group-name SSHAccess --description "Security group for SSH access" --vpc-id $vpc_id --query GroupId --output text`
+
+aws ec2 authorize-security-group-ingress --group-id $group_id --protocol tcp --port 22 --cidr 0.0.0.0/0
+
+instance_id=`aws ec2 run-instances --image-id ami-00f881f027a6d74a0 --count 1 --instance-type t3.micro --key-name MyKeyPair3 --security-group-ids $group_id --subnet-id $subnet_id --query Instances[0].InstanceId --output text`
+
+instance_address=`aws ec2 describe-instances --instance-id $instance_id --query "Reservations[0].Instances[0].PublicIpAddress" --output text`
+
+ssh -i "MyKeyPair3.pem" ec2-user@$instance_address

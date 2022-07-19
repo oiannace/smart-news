@@ -1,0 +1,10 @@
+{
+  "Variables": {
+    "db_host": "host-url",
+    "db_name": "tweet_db",
+    "db_pass": "pass",
+    "db_schema" : "processed_tweets",
+    "db_username" : "postgres"
+  }
+}
+

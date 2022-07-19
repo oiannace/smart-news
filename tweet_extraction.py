@@ -5,7 +5,7 @@ import datetime
 import boto3
 
 def lambda_handler(event, context):
-    bucket_dest_name = 'pre-transformation-bucket'
+    bucket_dest_name = 'tweet-bucket'
     s3 = boto3.resource('s3')
     bucket = s3.Bucket(bucket_dest_name)
 

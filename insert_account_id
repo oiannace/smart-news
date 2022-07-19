@@ -1,0 +1,6 @@
+#!/bin/bash
+
+account_id=$1
+
+sed -i -e "s/account_id/$account_id/g" setup_script role-permissions/bucket-permissions.json role-permissions/tweet-extraction-role-permissions.json role-permissions/tweet-transformation-role-permissions.json
+

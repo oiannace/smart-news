@@ -1,0 +1,8 @@
+{
+  "Variables": {
+    "twitter_api_secret": "secret",
+    "twitter_api_key": "key",
+    "twitter_api_bearer_token": "bearertoken"
+  }
+}
+

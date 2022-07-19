@@ -8,7 +8,7 @@ import pandas as pd
 
 def lambda_handler(event, context):
 
-    bucket_source_name = 'pre-transformation-bucket'
+    bucket_source_name = 'tweet-bucket'
     s3 = boto3.resource('s3')
     bucket = s3.Bucket(bucket_source_name)
 
